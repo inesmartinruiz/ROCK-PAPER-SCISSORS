@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<link rel="stylesheet" type="text/css" href="/style/style.css">
+<title>Rock Paper Scissors</title>
+</head>
+<body>
+	<form th:action="@{/rockpaperscissors/play-one-round}" th:object="${rounds}" th:method="post">
+		<div>
+			<div style="width: 30%; float: left;">
+				<button type="submit">Play Round</button>
+				<p><b>Number of rounds played: </b><span th:text="${#lists.size(rounds)}"></span></p>
+			</div>
+			
+			<div style="text-align: center; width: 40%; float: left;">
+				<table style="margin: 0 auto;">
+				    <thead style="background:gray;">
+			        	<tr>
+			            	<th> Player 1 </th>
+			            	<th> Player 2 </th>
+			            	<th> Result </th>
+			        	</tr>
+			    	</thead>
+					<tbody>
+						<tr th:if="${rounds.empty}">
+							<td colspan="3">No play rounds</td>
+						</tr>
+						<tr th:each="round: ${rounds}">
+							<td><span th:text="${round.playerOne}">Player1</span></td>
+							<td><span th:text="${round.playerTwo}">Player2</span></td>
+							<td><span th:text="${round.result.textResult}">Result</span></td>
+						</tr>		
+					</tbody>	
+				</table>
+			</div>
+		</div>
+	</form>
+	<form th:action="@{/rockpaperscissors/restart-game}" th:object="${rounds}" th:method="post">
+		<div style="width: 30%; float: right;">
+			<button type="submit">Restart Game</button>
+		</div>
+	</form>
+</body>
+</html>
