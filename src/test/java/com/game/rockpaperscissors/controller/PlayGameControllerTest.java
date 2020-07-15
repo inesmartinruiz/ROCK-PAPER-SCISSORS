@@ -2,6 +2,7 @@ package com.game.rockpaperscissors.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -38,14 +39,23 @@ public class PlayGameControllerTest {
         		new InternalResourceViewResolver(); 
         resolver.setSuffix(".html");
         mockMvc = MockMvcBuilders.standaloneSetup(playGameController)
-        		.setViewResolvers(resolver).build();
-
+        			.setViewResolvers(resolver).build();
     }
 
     @Test
-    public void testInitialPlayRoundPage() throws Exception {
+    public void testIndexPage() throws Exception {
+        this.mockMvc.perform(get("/rockpaperscissors/"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name(
+                		"redirect:/rockpaperscissors/play-round"));
+    }
+    
+    @Test
+    public void testPlayRoundPage() throws Exception {
         this.mockMvc.perform(get("/rockpaperscissors/play-round"))
                 .andExpect(status().isOk())
+                .andExpect(model().attributeExists("rounds"))
+                .andExpect(model().attributeExists("userId"))
                 .andExpect(view().name("play-round"));
     }
     

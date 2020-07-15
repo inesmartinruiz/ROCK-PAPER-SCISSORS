@@ -27,7 +27,10 @@ public class GamesInMemoryImpl<E> implements GamesRepository<E> {
 			throw new InvalidUserException("Invalid User");
 		}
 		if (gamesByUser == null) {
-			return null;
+			gamesByUser = new HashMap<>();
+		}
+		if (gamesByUser.get(user) == null) {
+			return new ArrayList<>();
 		}
 		return gamesByUser.get(user);
 	}
