@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -132,6 +133,29 @@ public class GamesInMemoryImplTest {
 			throws InvalidUserException {
 		gamesRepository.findAllGamesByUser(null);
 	}
+	
+	/**
+	 * Test that get all the rounds of all the users.
+	 * 
+	 * @throws InvalidUserException 
+	 */
+	@Test
+	public void shouldGetAllTheGamesOfAllTheUsers() 
+			throws InvalidUserException {
+		addRound_PAPER_ROCK_GamesUser1();
+		addRound_SCISSORS_ROCK_GamesUser2();
+		
+		Map<String, List<Round>> games = gamesRepository.getAllGames();
+
+		assertEquals(games.get("user1").get(0).getPlayerOne(), Choice.PAPER);
+		assertEquals(games.get("user1").get(0).getPlayerTwo(), Choice.ROCK);
+		assertEquals(
+				games.get("user1").get(0).getResult(), RoundResult.WIN_ONE);
+		assertEquals(games.get("user2").get(0).getPlayerOne(), Choice.SCISSORS);
+		assertEquals(games.get("user2").get(0).getPlayerTwo(), Choice.ROCK);
+		assertEquals(
+				games.get("user2").get(0).getResult(), RoundResult.WIN_TWO);
+	}
 
 	/**
 	 * Add a round(PAPER, ROCK) to the games of User1.
@@ -155,5 +179,4 @@ public class GamesInMemoryImplTest {
 
 		gamesRepository.addGameToUser("user2", roundPlayer2Win);
 	}
-
 }

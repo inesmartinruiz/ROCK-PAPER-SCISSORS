@@ -62,4 +62,9 @@ public class GamesInMemoryImpl<E> implements GamesRepository<E> {
 			gamesByUser.put(user, new ArrayList<>());
 		}
 	}
+	
+	@Override
+	public Map<String, List<E>> getAllGames() {
+		return gamesByUser;
+	}
 }

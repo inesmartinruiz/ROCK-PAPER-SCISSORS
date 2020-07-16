@@ -78,4 +78,11 @@ public class PlayGameController {
 		playGameService.restartGame(userId.toString());
 		return "redirect:/rockpaperscissors/play-round";
 	}
+	
+	@GetMapping("/totals")
+	public String totals(Model model) {
+		playGameService.getTotals().entrySet().stream()
+			.forEach(e -> model.addAttribute(e.getKey(), e.getValue()));
+		return "total";
+	}
 }

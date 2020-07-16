@@ -2,10 +2,12 @@ package com.game.rockpaperscissors.service;
 
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doThrow;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,13 +42,8 @@ public class PlayGameServiceTest {
 	@Test
 	public void shouldGetAllTheGamesOfTheUser() 
 			throws InvalidUserException {
-		Round roundPlayer1Win = new Round(Choice.PAPER, Choice.ROCK);
-		roundPlayer1Win.setResult(RoundResult.WIN_ONE);
-		Round roundPlayer2Win = new Round(Choice.SCISSORS, Choice.ROCK);
-		roundPlayer2Win.setResult(RoundResult.WIN_TWO);
-
 		List<Round> gamesUser1 = 
-				Arrays.asList(roundPlayer1Win, roundPlayer2Win);
+				Arrays.asList(getWINPLAYER1Round(), getWINPLAYER2Round());
 
 		BDDMockito.given(gamesRepository.findAllGamesByUser("user1"))
 			.willReturn(gamesUser1);
@@ -66,13 +63,8 @@ public class PlayGameServiceTest {
 	@Test
 	public void shouldGetDifferentGamesByDifferentUsers() 
 			throws InvalidUserException {
-		Round roundPlayer1Win = new Round(Choice.PAPER, Choice.ROCK);
-		roundPlayer1Win.setResult(RoundResult.WIN_ONE);
-		Round roundPlayer2Win = new Round(Choice.SCISSORS, Choice.ROCK);
-		roundPlayer2Win.setResult(RoundResult.WIN_TWO);
-
-		List<Round> gamesUser1 = Arrays.asList(roundPlayer1Win);
-		List<Round> gamesUser2 = Arrays.asList(roundPlayer2Win);
+		List<Round> gamesUser1 = Arrays.asList(getWINPLAYER1Round());
+		List<Round> gamesUser2 = Arrays.asList(getWINPLAYER2Round());
 
 		BDDMockito.given(gamesRepository.findAllGamesByUser("user1"))
 			.willReturn(gamesUser1);
@@ -106,7 +98,7 @@ public class PlayGameServiceTest {
 	@Test(expected = InvalidUserException.class)
 	public void shouldThrowsInvalidUserException() 
 			throws PlayRoundException, InvalidUserException {
-		doThrow(InvalidUserException.class).when(gamesRepository)
+		BDDMockito.doThrow(InvalidUserException.class).when(gamesRepository)
 			.addGameToUser(BDDMockito.eq(null), BDDMockito.any(Round.class));
 		playGameService.playNewGame(null);
 	}
@@ -126,4 +118,135 @@ public class PlayGameServiceTest {
 		assertEquals(playGameService.getAll("user1").size(), 0);	
 	}
 
+	/**
+	 * Test totals 0 games played.
+	 * 
+	 */
+	@Test
+	public void shouldCorrectTotalsOfCeroGamesPlayed() {
+		BDDMockito.given(gamesRepository.getAllGames())
+			.willReturn(new HashMap<>());
+		
+		assertEquals(playGameService.getTotals().get("totalRoundsPlayed"), 0);
+		assertEquals(playGameService.getTotals().get("totalWinsPlayer1"), 0);
+		assertEquals(playGameService.getTotals().get("totalWinsPlayer2"), 0);
+		assertEquals(playGameService.getTotals().get("totalDraw"), 0);
+	}
+	
+	/**
+	 * Test totals all games played with all of them wining player1.
+	 * 
+	 */
+	@Test
+	public void shouldCorrectTotalsOfAllGamesPlayedWiningPlayer1() {
+		Map<String, List<Round>> games = new HashMap<>();
+
+		List<Round> roundsUser1 = Arrays.asList(
+				getWINPLAYER1Round(), getWINPLAYER1Round(), 
+				getWINPLAYER1Round(), getWINPLAYER1Round());
+		List<Round> roundsUser2 = Arrays.asList(
+				getWINPLAYER1Round(), getWINPLAYER1Round());
+		
+		games.put("user1", roundsUser1);
+		games.put("user2", roundsUser2);
+		games.put("user3", roundsUser1);
+		
+		BDDMockito.given(gamesRepository.getAllGames())
+			.willReturn(games);
+		
+		assertEquals(playGameService.getTotals().get("totalRoundsPlayed"), 10);
+		assertEquals(playGameService.getTotals().get("totalWinsPlayer1"), 10);
+		assertEquals(playGameService.getTotals().get("totalWinsPlayer2"), 0);
+		assertEquals(playGameService.getTotals().get("totalDraw"), 0);
+	}
+	
+	/**
+	 * Test totals all games played with all of them wining player2.
+	 * 
+	 */
+	@Test
+	public void shouldCorrectTotalsOfAllGamesPlayedWiningPlayer2() {
+		Map<String, List<Round>> games = new HashMap<>();
+
+		List<Round> roundsUser1 = Arrays.asList(
+				getWINPLAYER2Round(), getWINPLAYER2Round(), 
+				getWINPLAYER2Round(), getWINPLAYER2Round());
+		List<Round> roundsUser2 = Arrays.asList(
+				getWINPLAYER2Round(), getWINPLAYER2Round());
+		
+		games.put("user1", roundsUser1);
+		games.put("user2", roundsUser2);
+		games.put("user3", roundsUser1);
+		games.put("user4", new ArrayList<>());
+		
+		BDDMockito.given(gamesRepository.getAllGames())
+			.willReturn(games);
+		
+		assertEquals(playGameService.getTotals().get("totalRoundsPlayed"), 10);
+		assertEquals(playGameService.getTotals().get("totalWinsPlayer1"), 0);
+		assertEquals(playGameService.getTotals().get("totalWinsPlayer2"), 10);
+		assertEquals(playGameService.getTotals().get("totalDraw"), 0);
+	}
+	
+	/**
+	 * Test totals ten games played.
+	 * 
+	 */
+	@Test
+	public void shouldCorrectTotalsOfGamesPlayed() {
+		Map<String, List<Round>> games = new HashMap<>();
+
+		List<Round> roundsUser1 = Arrays.asList(
+				getDRAWRound(),
+				getWINPLAYER1Round(), 
+				getWINPLAYER2Round(), getWINPLAYER2Round());
+		List<Round> roundsUser2 = Arrays.asList(
+				getWINPLAYER1Round(), 
+				getWINPLAYER2Round());
+		
+		games.put("user1", roundsUser1);
+		games.put("user2", roundsUser2);
+		games.put("user3", roundsUser1);
+		
+		BDDMockito.given(gamesRepository.getAllGames())
+			.willReturn(games);
+		
+		assertEquals(playGameService.getTotals().get("totalRoundsPlayed"), 10);
+		assertEquals(playGameService.getTotals().get("totalWinsPlayer1"), 3);
+		assertEquals(playGameService.getTotals().get("totalWinsPlayer2"), 5);
+		assertEquals(playGameService.getTotals().get("totalDraw"), 2);
+	}
+
+	/**
+	 * Get a round with Draw result.
+	 * 
+	 * @return Round
+	 */
+	private Round getDRAWRound() {
+		Round round = new Round(Choice.ROCK, Choice.ROCK);
+		round.setResult(RoundResult.DRAW);
+		return round;
+	}
+	
+	/**
+	 * Get a round with win for player 1.
+	 * 
+	 * @return Round
+	 */
+	private Round getWINPLAYER1Round() {
+		Round round = new Round(Choice.PAPER, Choice.ROCK);
+		round.setResult(RoundResult.WIN_ONE);
+		return round;
+	}
+	
+	/**
+	 * Get a round with win for player 2.
+	 * 
+	 * @return Round
+	 */
+	private Round getWINPLAYER2Round() {
+		Round round = new Round(Choice.SCISSORS, Choice.ROCK);
+		round.setResult(RoundResult.WIN_TWO);
+		return round;
+	}
 }

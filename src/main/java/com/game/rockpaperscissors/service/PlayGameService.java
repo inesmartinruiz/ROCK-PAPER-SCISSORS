@@ -1,6 +1,10 @@
 package com.game.rockpaperscissors.service;
 
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -69,6 +73,61 @@ public class PlayGameService {
 		gamesRepository.deleteGamesUser(user);
 	}
 
+	/**
+	 * Get a map with the information of totals of round and rounds results.
+	 * 
+	 * @return Map<String, Integer> Map with totals.
+	 */
+	public Map<String, Integer> getTotals() {
+		Map<String, List<Round>> games = gamesRepository.getAllGames();
+		Map<String, Integer> totals = new HashMap<>();
+		totals.put("totalRoundsPlayed", getTotalRoundsPlayed(games));
+		Map<RoundResult, Long> totalWins = getTotalPlayersWinByResult(games);
+		totals.put("totalWinsPlayer1", 
+				totalWins.get(RoundResult.WIN_ONE).intValue());
+		totals.put("totalWinsPlayer2", 
+				totalWins.get(RoundResult.WIN_TWO).intValue());
+		totals.put("totalDraw", 
+				totalWins.get(RoundResult.DRAW).intValue());
+		return totals;
+	}
+	
+
+	/**
+	 * Get total rounds played.
+	 * 
+	 * @param games All the games of all the players.
+	 * 
+	 * @return int Total rounds played.
+	 */
+	private int getTotalRoundsPlayed(Map<String, List<Round>> games) {
+		return games.entrySet().stream()
+		 			.mapToInt(gamesUser -> gamesUser.getValue().size()).sum();
+	}
+
+	/**
+	 * Get total wins for the players.
+	 * 
+	 * @param games All the games of all the players.
+	 * @return Map<RoundResult, Long> with total wins for each player
+	 */
+	private Map<RoundResult, Long> getTotalPlayersWinByResult(
+			Map<String, List<Round>> games) {
+		Map<RoundResult, Long> totalPlayersWinByResult = 
+				games.entrySet().stream()
+					.map(entry -> entry.getValue())
+					.flatMap(List::stream)
+					.collect(Collectors.groupingBy(Round::getResult, 
+							Collectors.counting()));
+		
+		// If any player never wins
+		EnumSet.allOf(RoundResult.class)
+			.forEach(roundResult -> totalPlayersWinByResult
+					.computeIfAbsent(roundResult, value -> 0L));
+		
+		return totalPlayersWinByResult;
+	}
+	
 	/**
 	 * Get a round with the result of player1, player2 game.
 	 * 

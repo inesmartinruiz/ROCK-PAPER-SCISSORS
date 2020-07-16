@@ -1,6 +1,7 @@
 package com.game.rockpaperscissors.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import com.game.rockpaperscissors.exception.InvalidUserException;
 
@@ -38,5 +39,12 @@ public interface GamesRepository<E> {
 	 * @throws InvalidUserException
 	 */
 	public void deleteGamesUser(String user) throws InvalidUserException;
+	
+	/**
+	 * Get all the games of all the users.
+	 * 
+	 * @return Map<String, List<E>>
+	 */
+	public Map<String, List<E>> getAllGames();
 
 }

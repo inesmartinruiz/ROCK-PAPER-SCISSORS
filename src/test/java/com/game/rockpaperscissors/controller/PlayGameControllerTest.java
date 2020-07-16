@@ -74,5 +74,12 @@ public class PlayGameControllerTest {
                 .andExpect(view().name(
                 		"redirect:/rockpaperscissors/play-round"));
     }
+    
+    @Test
+    public void testTotalPage() throws Exception {   	
+        this.mockMvc.perform(get("/rockpaperscissors/totals"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("total"));
+    }
 
 }
