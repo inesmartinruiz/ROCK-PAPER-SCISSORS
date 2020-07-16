@@ -7,8 +7,6 @@ import com.game.rockpaperscissors.exception.InvalidUserException;
 
 /**
  * Games Repository Interface.
- * 
- * @author Ines
  *
  * @param <E>
  */

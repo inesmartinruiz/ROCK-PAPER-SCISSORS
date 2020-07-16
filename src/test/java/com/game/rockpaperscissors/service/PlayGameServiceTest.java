@@ -14,7 +14,6 @@ import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.game.rockpaperscissors.exception.InvalidUserException;
@@ -25,7 +24,6 @@ import com.game.rockpaperscissors.model.enums.RoundResult;
 import com.game.rockpaperscissors.repository.GamesRepository;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
 public class PlayGameServiceTest {
 
 	@Mock

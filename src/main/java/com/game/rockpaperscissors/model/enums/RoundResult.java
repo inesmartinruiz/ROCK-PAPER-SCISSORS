@@ -5,8 +5,6 @@ import lombok.Getter;
 /**
  * Round Result enum.
  * 
- * @author Ines
- *
  */
 @Getter
 public enum RoundResult {

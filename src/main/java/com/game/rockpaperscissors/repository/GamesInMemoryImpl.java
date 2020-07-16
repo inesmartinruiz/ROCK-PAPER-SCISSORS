@@ -11,8 +11,6 @@ import com.game.rockpaperscissors.exception.InvalidUserException;
 
 /**
  * Games In Memory Repository Implementation.
- * 
- * @author Ines
  *
  * @param <E>
  */

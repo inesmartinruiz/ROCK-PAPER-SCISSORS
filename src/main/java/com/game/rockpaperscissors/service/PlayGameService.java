@@ -19,8 +19,6 @@ import com.game.rockpaperscissors.utils.RandomChoiceUtil;
 
 /**
  * Play Game Service.
- * 
- * @author Ines
  *
  */
 @Service
